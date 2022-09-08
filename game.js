@@ -5,10 +5,9 @@ const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
 
-window.addEventListener("load", setCanvasSize);
-window.addEventListener("resize", setCanvasSize);
 let elementsSize;
 let canvaSize;
+let level = 0;
 
 const playerPosition = {
   x: undefined,
@@ -19,6 +18,9 @@ const gifPosition = {
   y: undefined,
 };
 let enemyPositions= [];
+
+window.addEventListener("load", setCanvasSize);
+window.addEventListener("resize", setCanvasSize);
 
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
@@ -39,7 +41,11 @@ function startGame() {
   game.font = elementsSize + "px Verdana";
   game.textAlign = "end";
 
-  const map = maps[0];
+  const map = maps[level];
+  if(!map){
+    gameWin();
+    return
+  }
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
 
@@ -74,7 +80,7 @@ function movePlayer() {
   const gifColitionX = playerPosition.x.toFixed(3) == gifPosition.x.toFixed(3);
   const gifColitionY = playerPosition.y.toFixed(3) == gifPosition.y.toFixed(3);
   const gifColition = gifColitionX && gifColitionY
-  if(gifColition) {console.log('subuste de nivel');}
+  if(gifColition) {levelWin();}
 
   const enemyColition = enemyPositions.find(enemy =>{
     const enemyColitionX = enemy.x.toFixed(3) == playerPosition.x.toFixed(3);
@@ -85,6 +91,15 @@ function movePlayer() {
 
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
 }
+
+function levelWin(){
+  console.log('subiste de nivel');
+  level++;
+  startGame();
+}
+
+function gameWin() {}
+
 
 window.addEventListener("keydown", moveByKeys);
 btnUp.addEventListener("click", moveUp);
@@ -135,3 +150,4 @@ function moveDown() {
     startGame();
   }
 }
+
