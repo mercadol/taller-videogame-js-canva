@@ -10,6 +10,11 @@ window.addEventListener("resize", setCanvasSize);
 let elementsSize;
 let canvaSize;
 
+const playerPosition = {
+  x: undefined,
+  y: undefined,
+};
+
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
     canvaSize = window.innerWidth * 0.8;
@@ -34,22 +39,26 @@ function startGame() {
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
   console.log({ map, mapRows, mapRowCols });
 
+  game.clearRect(0, 0, canvaSize, canvaSize);
   mapRowCols.forEach((row, rowIndex) => {
     row.forEach((col, colIndex) => {
       const positionX = elementsSize * (colIndex + 1);
-      const positiony = elementsSize * (rowIndex + 1);
-      game.fillText(emojis[col], positionX, positiony);
+      const positionY = elementsSize * (rowIndex + 1);
+
+      if (col == "O") {
+        if (!playerPosition.x && !playerPosition.y) {
+          playerPosition.x = positionX;
+          playerPosition.y = positionY;
+        }
+      }
+      game.fillText(emojis[col], positionX, positionY);
     });
   });
-  for (let row = 0; row < 10; row++) {
-    for (let col = 0; col < 10; col++) {
-      game.fillText(
-        emojis[mapRowCols[row][col]],
-        elementsSize * (col + 1),
-        elementsSize * (row + 1)
-      );
-    }
-  }
+  movePlayer();
+}
+
+function movePlayer() {
+  game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
 }
 
 window.addEventListener("keydown", moveByKeys);
@@ -67,13 +76,37 @@ function moveByKeys() {
 }
 function moveUp() {
   console.log("arriba");
+  if (playerPosition.y - elementsSize < elementsSize) {
+    console.log("out");
+  } else {
+    playerPosition.y -= elementsSize;
+    startGame();
+  }
 }
 function moveLeft() {
   console.log("izquierda");
+  if (playerPosition.x - elementsSize < elementsSize) {
+    console.log("out");
+  } else {
+    playerPosition.x -= elementsSize;
+    startGame();
+  }
 }
 function moveRight() {
   console.log("derecha");
+  if (playerPosition.x - elementsSize > canvaSize) {
+    console.log("out");
+  } else {
+    playerPosition.x += elementsSize;
+    startGame();
+  }
 }
 function moveDown() {
   console.log("abajo");
+  if (playerPosition.y - elementsSize > canvaSize) {
+    console.log("out");
+  } else {
+    playerPosition.y += elementsSize;
+    startGame();
+  }
 }
