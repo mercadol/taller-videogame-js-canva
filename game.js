@@ -14,6 +14,11 @@ const playerPosition = {
   x: undefined,
   y: undefined,
 };
+const gifPosition = {
+  x: undefined,
+  y: undefined,
+};
+let enemyPositions= [];
 
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
@@ -37,8 +42,8 @@ function startGame() {
   const map = maps[0];
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
-  console.log({ map, mapRows, mapRowCols });
 
+  enemyPositions = [];
   game.clearRect(0, 0, canvaSize, canvaSize);
   mapRowCols.forEach((row, rowIndex) => {
     row.forEach((col, colIndex) => {
@@ -50,6 +55,14 @@ function startGame() {
           playerPosition.x = positionX;
           playerPosition.y = positionY;
         }
+      } else if (col == 'I'){
+        gifPosition.x = positionX;
+        gifPosition.y = positionY;
+      } else if (col == 'X'){
+        enemyPositions.push({
+          x: positionX,
+          y: positionY,
+        });
       }
       game.fillText(emojis[col], positionX, positionY);
     });
@@ -58,6 +71,18 @@ function startGame() {
 }
 
 function movePlayer() {
+  const gifColitionX = playerPosition.x.toFixed(3) == gifPosition.x.toFixed(3);
+  const gifColitionY = playerPosition.y.toFixed(3) == gifPosition.y.toFixed(3);
+  const gifColition = gifColitionX && gifColitionY
+  if(gifColition) {console.log('subuste de nivel');}
+
+  const enemyColition = enemyPositions.find(enemy =>{
+    const enemyColitionX = enemy.x.toFixed(3) == playerPosition.x.toFixed(3);
+    const enemyColitionY =enemy.y.toFixed(3) == playerPosition.y.toFixed(3);
+    return enemyColitionX && enemyColitionY
+  });
+  if(enemyColition) {console.log('chocaste contra un enemigo');}
+
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
 }
 
