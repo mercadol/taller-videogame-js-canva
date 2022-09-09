@@ -6,6 +6,8 @@ const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
 const spanLives = document.querySelector("#lives");
 const spanTime = document.querySelector("#time");
+const pResult = document.querySelector("#result");
+const spanRecord = document.querySelector("#record");
 
 let elementsSize;
 let canvaSize;
@@ -29,6 +31,10 @@ let enemyPositions = [];
 window.addEventListener("load", setCanvasSize);
 window.addEventListener("resize", setCanvasSize);
 
+function fixerNumber (n){
+  return Number(n.toFixed(0));
+}
+
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
     canvaSize = window.innerWidth * 0.8;
@@ -36,11 +42,14 @@ function setCanvasSize() {
     canvaSize = window.innerHeight * 0.8;
   }
 
+  canvaSize = Number(canvaSize.toFixed(0))
+
   canvas.setAttribute("width", canvaSize);
   canvas.setAttribute("height", canvaSize);
 
   elementsSize = canvaSize / 10;
-
+  playerPosition.x=undefined;
+  playerPosition.y=undefined;
   startGame();
 }
 
@@ -57,6 +66,7 @@ function startGame() {
   if(!timeStart){
   timeStart=Date.now();
   timeInterval = setInterval(showTime, 100);
+  showRecord();
   }
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
@@ -133,9 +143,28 @@ function showLives() {
 function showTime (){
   spanTime.innerHTML= Date.now()-timeStart;
 }
+function showRecord() {
+  spanRecord.innerHTML = localStorage.getItem('record_time')
+}
 function gameWin() {
   console.log("terminaste el juego");
   clearInterval(timeInterval);
+
+  const recordTime= localStorage.getItem('record_time');
+  const playerTime = Date.now() - timeStart;
+
+  if(recordTime){
+    if(recordTime >= playerTime) {
+      localStorage.setItem('record_time', playerTime);
+      pResult.innerHTML='Has superado el record :D';
+    }else {
+      pResult.innerHTML='No superaste el records :(';
+    }
+  }else{
+    localStorage.setItem('record_time', playerTime)
+    pResult.innerHTML='Primera vez? Muy bien, pero ahora trata de superar tu tiempo';
+  }
+  console.log({recordTime, playerTime});
 }
 function gameOver() {
   console.log("Se acabaron las vidas");
